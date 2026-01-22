@@ -19,6 +19,7 @@ export { CustomCommandWidget } from './CustomCommand';
 export { BlockTimerWidget } from './BlockTimer';
 export { CurrentWorkingDirWidget } from './CurrentWorkingDir';
 export { ClaudeSessionIdWidget } from './ClaudeSessionId';
+export { BtcPriceWidget } from './BtcPrice';
 // Activity tracking widgets (from claude-hud merge)
 export { ToolsActivityWidget } from './ToolsActivity';
 export { AgentsActivityWidget } from './AgentsActivity';

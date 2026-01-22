@@ -28,6 +28,7 @@ const widgetRegistry = new Map<WidgetItemType, Widget>([
     ['custom-text', new widgets.CustomTextWidget()],
     ['custom-command', new widgets.CustomCommandWidget()],
     ['claude-session-id', new widgets.ClaudeSessionIdWidget()],
+    ['btc-price', new widgets.BtcPriceWidget()],
     // Activity tracking widgets (from claude-hud merge)
     ['tools-activity', new widgets.ToolsActivityWidget()],
     ['agents-activity', new widgets.AgentsActivityWidget()],
