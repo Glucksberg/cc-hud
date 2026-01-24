@@ -620,7 +620,7 @@ export function renderStatusLine(
     preCalculatedMaxWidths: number[]
 ): string {
     // Force 24-bit color for non-preview statusline rendering
-    // Chalk level is now set globally in ccstatusline.ts and tui.tsx
+    // Chalk level is now set globally in cc-hud.ts and tui.tsx
     // No need to override here
 
     // Get color level from settings

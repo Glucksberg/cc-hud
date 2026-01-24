@@ -16,7 +16,7 @@ import React, {
 import type { Settings } from '../types/Settings';
 import type { WidgetItem } from '../types/Widget';
 import {
-    CCSTATUSLINE_COMMANDS,
+    CC_HUD_COMMANDS,
     getClaudeSettingsPath,
     getExistingStatusLine,
     installStatusLine,
@@ -134,7 +134,7 @@ export const App: React.FC = () => {
 
     const handleInstallSelection = useCallback((command: string, displayName: string, useBunx: boolean) => {
         void getExistingStatusLine().then((existing) => {
-            const isAlreadyInstalled = [CCSTATUSLINE_COMMANDS.NPM, CCSTATUSLINE_COMMANDS.BUNX, CCSTATUSLINE_COMMANDS.SELF_MANAGED].includes(existing ?? '');
+            const isAlreadyInstalled = [CC_HUD_COMMANDS.NPM, CC_HUD_COMMANDS.BUNX, CC_HUD_COMMANDS.SELF_MANAGED].includes(existing ?? '');
             let message: string;
 
             if (existing && !isAlreadyInstalled) {
@@ -160,11 +160,11 @@ export const App: React.FC = () => {
     }, []);
 
     const handleNpxInstall = useCallback(() => {
-        handleInstallSelection(CCSTATUSLINE_COMMANDS.NPM, 'npx', false);
+        handleInstallSelection(CC_HUD_COMMANDS.NPM, 'npx', false);
     }, [handleInstallSelection]);
 
     const handleBunxInstall = useCallback(() => {
-        handleInstallSelection(CCSTATUSLINE_COMMANDS.BUNX, 'bunx', true);
+        handleInstallSelection(CC_HUD_COMMANDS.BUNX, 'bunx', true);
     }, [handleInstallSelection]);
 
     if (!settings) {

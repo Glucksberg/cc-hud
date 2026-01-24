@@ -18,13 +18,13 @@ bun install
 bun run start
 
 # Test with piped input (use [1m] suffix for 1M context models)
-echo '{"model":{"id":"claude-sonnet-4-5-20250929[1m]"},"transcript_path":"test.jsonl"}' | bun run src/ccstatusline.ts
+echo '{"model":{"id":"claude-sonnet-4-5-20250929[1m]"},"transcript_path":"test.jsonl"}' | bun run src/cc-hud.ts
 
 # Or use example payload
 bun run example
 
 # Build for npm distribution
-bun run build   # Creates dist/ccstatusline.js with Node.js 14+ compatibility
+bun run build   # Creates dist/cc-hud.js with Node.js 14+ compatibility
 
 # Run tests
 bun test
@@ -41,7 +41,7 @@ bun run lint   # Runs TypeScript type checking and ESLint with auto-fix
 The project has dual runtime compatibility - works with both Bun and Node.js:
 
 ### Core Structure
-- **src/ccstatusline.ts**: Main entry point that detects piped vs interactive mode
+- **src/cc-hud.ts**: Main entry point that detects piped vs interactive mode
   - Piped mode: Parses JSON from stdin and renders formatted status line
   - Interactive mode: Launches React/Ink TUI for configuration
 
@@ -54,7 +54,7 @@ The project has dual runtime compatibility - works with both Bun and Node.js:
 
 ### Utilities (src/utils/)
 - **config.ts**: Settings management
-  - Loads from `~/.config/ccstatusline/settings.json`
+  - Loads from `~/.config/cc-hud/settings.json`
   - Handles migration from old settings format
   - Default configuration if no settings exist
 - **renderer.ts**: Core rendering logic for status lines
@@ -68,6 +68,11 @@ The project has dual runtime compatibility - works with both Bun and Node.js:
   - Detects installation status and manages settings.json updates
   - Validates config directory paths with proper error handling
 - **colors.ts**: Color definitions and ANSI code mapping
+- **activity-parser.ts**: Parses Claude Code transcript JSONL for activity metrics
+  - Tracks tool invocations (running/completed)
+  - Tracks subagent tasks
+  - Parses legacy TodoWrite tool calls
+  - Parses new TaskCreate/TaskUpdate tool calls (v2.1.16+)
 - **model-context.ts**: Model-to-context-window mapping
   - Maps model IDs to their context window sizes based on [1m] suffix
   - Sonnet 4.5 WITH [1m] suffix: 1M tokens (800k usable at 80%) - requires long context beta access
@@ -103,6 +108,11 @@ All widgets must implement:
 - BlockTimer, SessionClock, SessionCost - Time and cost tracking
 - CurrentWorkingDir, TerminalWidth - Environment info
 - CustomText, CustomCommand - User-defined widgets
+- ToolsActivity, AgentsActivity - Real-time tool and agent tracking
+- TodosProgress - Legacy todo list progress (TodoWrite tool)
+- TasksProgress - New task system progress (TaskCreate/TaskUpdate tools, v2.1.16+)
+- UsageLimits - API usage tier display
+- BtcPrice - Bitcoin price widget
 
 ## Key Implementation Details
 
@@ -132,16 +142,17 @@ Default to using Bun instead of Node.js:
   - Applied automatically during `bun install` via `patchedDependencies` in package.json
   - Patch file: `patches/ink@6.2.0.patch`
 - **Build process**: Two-step build using `bun run build`
-  1. `bun build`: Bundles src/ccstatusline.ts into dist/ccstatusline.js targeting Node.js 14+
+  1. `bun build`: Bundles src/cc-hud.ts into dist/cc-hud.js targeting Node.js 14+
   2. `postbuild`: Runs scripts/replace-version.ts to replace `__PACKAGE_VERSION__` placeholder with actual version from package.json
 - **ESLint configuration**: Uses flat config format (eslint.config.js) with TypeScript and React plugins
 - **Dependencies**: All runtime dependencies are bundled using `--packages=external` for npm package
 - **Type checking and linting**: Only run via `bun run lint` command, never using `npx eslint` or `eslint` directly. Never run `tsx`, `bun tsc` or any other variation
 - **Lint rules**: Never disable a lint rule via a comment, no matter how benign the lint warning or error may seem
-- **Testing**: Uses Vitest (via Bun) with 6 test files and ~40 test cases covering:
+- **Testing**: Uses Vitest (via Bun) with 8 test files and ~50 test cases covering:
   - Model context detection and token calculation (src/utils/__tests__/model-context.test.ts)
   - Context percentage calculations (src/utils/__tests__/context-percentage.test.ts)
   - JSONL transcript parsing (src/utils/__tests__/jsonl.test.ts)
+  - Task/Todo activity parsing (src/utils/__tests__/activity-parser-tasks.test.ts)
   - Widget rendering (src/widgets/__tests__/*.test.ts)
   - Run tests with `bun test` or `bun test --watch` for watch mode
   - Test configuration: vitest.config.ts

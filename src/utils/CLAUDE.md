@@ -7,12 +7,7 @@
 
 | ID | Time | T | Title | Read |
 |----|------|---|-------|------|
-| #402 | 7:40 AM | 🔵 | Remaining ccstatusline references found in multiple files | ~347 |
-| #400 | 7:39 AM | ✅ | Updated temporary directory name in Powerline font installation | ~279 |
-| #399 | " | ✅ | Updated migration messages from ccstatusline to cc-hud | ~277 |
-| #398 | " | 🔵 | Powerline fonts utility references ccstatusline in temp directory naming | ~251 |
-| #397 | " | 🔵 | Migration utility contains ccstatusline references in update messages | ~335 |
-| #390 | " | 🔵 | Configuration module uses ccstatusline directory for settings storage | ~261 |
-| #388 | " | ✅ | Updated Claude settings integration commands from ccstatusline to cc-hud | ~313 |
-| #386 | 7:38 AM | 🔵 | Source code still references ccstatusline in command constants and installation logic | ~331 |
+| #1400 | 11:31 PM | ✅ | BTC price widget changes committed to cc-hud repository | ~264 |
+| #1397 | " | 🟣 | BTC price widget integrated into cc-hud from cc-statusline | ~255 |
+| #1393 | 11:30 PM | 🔵 | cc-hud widget registry differs from cc-statusline with activity tracking widgets | ~335 |
 </claude-mem-context>

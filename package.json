@@ -2,17 +2,17 @@
   "name": "cc-hud",
   "version": "3.0.0",
   "description": "A customizable status line with activity tracking for Claude Code CLI",
-  "module": "src/ccstatusline.ts",
+  "module": "src/cc-hud.ts",
   "type": "module",
   "bin": {
-    "cc-hud": "dist/ccstatusline.js"
+    "cc-hud": "dist/cc-hud.js"
   },
   "files": [
     "dist/"
   ],
   "scripts": {
-    "start": "bun run src/ccstatusline.ts",
-    "build": "rm -rf dist/* ; bun build src/ccstatusline.ts --target=node --outfile=dist/ccstatusline.js --target-version=14",
+    "start": "bun run src/cc-hud.ts",
+    "build": "rm -rf dist/* ; bun build src/cc-hud.ts --target=node --outfile=dist/cc-hud.js --target-version=14",
     "postbuild": "bun run scripts/replace-version.ts",
     "example": "cat scripts/payload.example.json | bun start",
     "prepublishOnly": "bun run build",

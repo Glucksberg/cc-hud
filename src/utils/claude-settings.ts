@@ -13,7 +13,7 @@ const readFile = fs.promises.readFile;
 const writeFile = fs.promises.writeFile;
 const mkdir = fs.promises.mkdir;
 
-export const CCSTATUSLINE_COMMANDS = {
+export const CC_HUD_COMMANDS = {
     NPM: 'npx -y cc-hud@latest',
     BUNX: 'bunx -y cc-hud@latest',
     SELF_MANAGED: 'cc-hud'
@@ -85,11 +85,11 @@ export async function isInstalled(): Promise<boolean> {
     // Check if command is either npx or bunx version AND padding is 0 (or undefined for new installs)
     const validCommands = [
         // Default autoinstalled npm command
-        CCSTATUSLINE_COMMANDS.NPM,
+        CC_HUD_COMMANDS.NPM,
         // Default autoinstalled bunx command
-        CCSTATUSLINE_COMMANDS.BUNX,
+        CC_HUD_COMMANDS.BUNX,
         // Self managed installation command
-        CCSTATUSLINE_COMMANDS.SELF_MANAGED
+        CC_HUD_COMMANDS.SELF_MANAGED
     ];
     return (
         validCommands.includes(settings.statusLine?.command ?? '')
@@ -116,8 +116,8 @@ export async function installStatusLine(useBunx = false): Promise<void> {
     settings.statusLine = {
         type: 'command',
         command: useBunx
-            ? CCSTATUSLINE_COMMANDS.BUNX
-            : CCSTATUSLINE_COMMANDS.NPM,
+            ? CC_HUD_COMMANDS.BUNX
+            : CC_HUD_COMMANDS.NPM,
         padding: 0
     };
 
