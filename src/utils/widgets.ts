@@ -33,6 +33,7 @@ const widgetRegistry = new Map<WidgetItemType, Widget>([
     ['tools-activity', new widgets.ToolsActivityWidget()],
     ['agents-activity', new widgets.AgentsActivityWidget()],
     ['todos-progress', new widgets.TodosProgressWidget()],
+    ['tasks-progress', new widgets.TasksProgressWidget()],
     ['usage-limits', new widgets.UsageLimitsWidget()]
 ]);
 

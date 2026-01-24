@@ -18,11 +18,24 @@ export interface SubagentTask {
 }
 
 /**
- * Represents a todo item from the transcript
+ * Represents a todo item from the transcript (legacy TodoWrite system)
  */
 export interface TodoItem {
     content: string;
     status: 'pending' | 'in_progress' | 'completed';
+}
+
+/**
+ * Represents a task item from the new Tasks system (v2.1.16+)
+ * Uses TaskCreate/TaskUpdate/TaskList tools
+ */
+export interface TaskItem {
+    id: string;
+    subject: string;
+    description?: string;
+    status: 'pending' | 'in_progress' | 'completed';
+    owner?: string;
+    blockedBy?: string[];
 }
 
 /**
@@ -47,8 +60,10 @@ export interface ActivityMetrics {
     activeAgents: SubagentTask[];
     /** Completed subagents/tasks (last 5) */
     completedAgents: SubagentTask[];
-    /** Current todo items */
+    /** Current todo items (legacy TodoWrite system) */
     todos: TodoItem[];
+    /** Current task items (new Tasks system v2.1.16+) */
+    tasks: TaskItem[];
     /** Usage limits info */
     usageLimits?: UsageLimits;
 }

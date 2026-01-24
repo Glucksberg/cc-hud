@@ -4,6 +4,7 @@ import { promisify } from 'util';
 import type {
     ActivityMetrics,
     SubagentTask,
+    TaskItem,
     TodoItem,
     ToolInvocation,
     UsageLimits
@@ -41,7 +42,8 @@ export async function getActivityMetrics(transcriptPath: string): Promise<Activi
         recentTools: [],
         activeAgents: [],
         completedAgents: [],
-        todos: []
+        todos: [],
+        tasks: []
     };
 
     try {
@@ -55,6 +57,7 @@ export async function getActivityMetrics(transcriptPath: string): Promise<Activi
         const toolInvocations = new Map<string, ToolInvocation>();
         const agentTasks = new Map<string, SubagentTask>();
         const todos: TodoItem[] = [];
+        const tasks = new Map<string, TaskItem>();
 
         for (const line of lines) {
             try {
@@ -66,8 +69,11 @@ export async function getActivityMetrics(transcriptPath: string): Promise<Activi
                 // Parse subagent/task activity
                 parseAgentActivity(data, agentTasks);
 
-                // Parse todo updates from message content
+                // Parse todo updates from message content (legacy system)
                 parseTodoUpdates(data, todos);
+
+                // Parse task updates from new Tasks system (v2.1.16+)
+                parseTaskUpdates(data, tasks);
             } catch {
                 // Skip invalid JSON lines - expected during partial writes or corrupted entries
             }
@@ -110,7 +116,8 @@ export async function getActivityMetrics(transcriptPath: string): Promise<Activi
             recentTools: limitedRecentTools,
             activeAgents,
             completedAgents: limitedCompletedAgents,
-            todos
+            todos,
+            tasks: Array.from(tasks.values())
             // Note: usageLimits is reserved for future use when API provides this data
         };
     } catch {
@@ -219,6 +226,98 @@ function parseTodoUpdates(
                                 status: todo.status
                             });
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Valid task status values */
+const VALID_TASK_STATUSES = ['pending', 'in_progress', 'completed'] as const;
+
+/**
+ * Type guard to validate task status
+ */
+function isValidTaskStatus(status: string): status is TaskItem['status'] {
+    return VALID_TASK_STATUSES.includes(status as TaskItem['status']);
+}
+
+/**
+ * Parse task updates from transcript messages (new Tasks system v2.1.16+)
+ * Looks for TaskCreate and TaskUpdate tool invocations
+ */
+function parseTaskUpdates(
+    data: TranscriptMessage,
+    tasks: Map<string, TaskItem>
+): void {
+    if (data.message?.content) {
+        for (const block of data.message.content) {
+            // Handle TaskCreate - creates new tasks
+            if (block.type === 'tool_use' && block.name === 'TaskCreate') {
+                const input = block.input as {
+                    subject?: string;
+                    description?: string;
+                    metadata?: Record<string, unknown>;
+                } | undefined;
+
+                if (input?.subject && block.id) {
+                    // TaskCreate uses the tool_use id as the initial task id
+                    // but TaskUpdate uses its own taskId field
+                    tasks.set(block.id, {
+                        id: block.id,
+                        subject: input.subject,
+                        description: input.description,
+                        status: 'pending'
+                    });
+                }
+            }
+
+            // Handle TaskUpdate - updates task status
+            if (block.type === 'tool_use' && block.name === 'TaskUpdate') {
+                const input = block.input as {
+                    taskId?: string;
+                    status?: string;
+                    subject?: string;
+                    description?: string;
+                    owner?: string;
+                    addBlockedBy?: string[];
+                } | undefined;
+
+                if (input?.taskId) {
+                    const existingTask = tasks.get(input.taskId);
+                    if (existingTask) {
+                        // Update existing task
+                        if (input.status && isValidTaskStatus(input.status)) {
+                            existingTask.status = input.status;
+                        }
+                        if (input.subject) {
+                            existingTask.subject = input.subject;
+                        }
+                        if (input.description) {
+                            existingTask.description = input.description;
+                        }
+                        if (input.owner) {
+                            existingTask.owner = input.owner;
+                        }
+                        if (input.addBlockedBy) {
+                            existingTask.blockedBy = [
+                                ...(existingTask.blockedBy ?? []),
+                                ...input.addBlockedBy
+                            ];
+                        }
+                    } else {
+                        // Task not seen before (maybe created in previous session)
+                        // Create a minimal entry
+                        tasks.set(input.taskId, {
+                            id: input.taskId,
+                            subject: input.subject ?? `Task ${input.taskId}`,
+                            status: input.status && isValidTaskStatus(input.status)
+                                ? input.status
+                                : 'pending',
+                            owner: input.owner,
+                            blockedBy: input.addBlockedBy
+                        });
                     }
                 }
             }

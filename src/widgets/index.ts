@@ -24,4 +24,5 @@ export { BtcPriceWidget } from './BtcPrice';
 export { ToolsActivityWidget } from './ToolsActivity';
 export { AgentsActivityWidget } from './AgentsActivity';
 export { TodosProgressWidget } from './TodosProgress';
+export { TasksProgressWidget } from './TasksProgress';
 export { UsageLimitsWidget } from './UsageLimits';
