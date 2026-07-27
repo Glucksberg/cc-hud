@@ -1,7 +1,12 @@
-import { describe, expect, it } from 'vitest';
 import * as fs from 'fs';
-import * as path from 'path';
 import * as os from 'os';
+import * as path from 'path';
+import {
+    describe,
+    expect,
+    it
+} from 'vitest';
+
 import { getActivityMetrics } from '../activity-parser';
 
 describe('getActivityMetrics - Tasks parsing', () => {
@@ -41,9 +46,12 @@ describe('getActivityMetrics - Tasks parsing', () => {
         try {
             const metrics = await getActivityMetrics(transcript);
             expect(metrics.tasks).toHaveLength(1);
-            expect(metrics.tasks[0].id).toBe('task-1');
-            expect(metrics.tasks[0].subject).toBe('Fix the bug');
-            expect(metrics.tasks[0].status).toBe('pending');
+            const task = metrics.tasks[0];
+            if (!task)
+                throw new Error('Expected one parsed task');
+            expect(task.id).toBe('task-1');
+            expect(task.subject).toBe('Fix the bug');
+            expect(task.status).toBe('pending');
         } finally {
             cleanupFile(transcript);
         }
@@ -59,9 +67,7 @@ describe('getActivityMetrics - Tasks parsing', () => {
                         type: 'tool_use',
                         name: 'TaskCreate',
                         id: 'task-1',
-                        input: {
-                            subject: 'Fix the bug'
-                        }
+                        input: { subject: 'Fix the bug' }
                     }]
                 }
             },
@@ -85,7 +91,10 @@ describe('getActivityMetrics - Tasks parsing', () => {
         try {
             const metrics = await getActivityMetrics(transcript);
             expect(metrics.tasks).toHaveLength(1);
-            expect(metrics.tasks[0].status).toBe('in_progress');
+            const task = metrics.tasks[0];
+            if (!task)
+                throw new Error('Expected one parsed task');
+            expect(task.status).toBe('in_progress');
         } finally {
             cleanupFile(transcript);
         }
@@ -180,9 +189,12 @@ describe('getActivityMetrics - Tasks parsing', () => {
         try {
             const metrics = await getActivityMetrics(transcript);
             expect(metrics.tasks).toHaveLength(1);
-            expect(metrics.tasks[0].id).toBe('external-task');
-            expect(metrics.tasks[0].subject).toBe('External task');
-            expect(metrics.tasks[0].status).toBe('in_progress');
+            const task = metrics.tasks[0];
+            if (!task)
+                throw new Error('Expected one parsed task');
+            expect(task.id).toBe('external-task');
+            expect(task.subject).toBe('External task');
+            expect(task.status).toBe('in_progress');
         } finally {
             cleanupFile(transcript);
         }

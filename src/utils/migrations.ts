@@ -50,7 +50,7 @@ export const migrations: Migration[] = [
                                     ...item,
                                     id: generateGuid(),
                                     type: item.type
-                                } as WidgetItem);
+                                });
                             }
                         }
                         processedLines.push(typedLine);

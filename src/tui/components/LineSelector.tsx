@@ -91,16 +91,16 @@ const LineSelector: React.FC<LineSelectorProps> = ({
         }
 
         switch (input) {
-        case 'a':
-            if (allowEditing) {
-                appendLine();
-            }
-            return;
-        case 'd':
-            if (allowEditing && localLines.length > 1) {
-                setShowDeleteDialog(true);
-            }
-            return;
+            case 'a':
+                if (allowEditing) {
+                    appendLine();
+                }
+                return;
+            case 'd':
+                if (allowEditing && localLines.length > 1) {
+                    setShowDeleteDialog(true);
+                }
+                return;
         }
 
         if (key.escape) {

@@ -1,15 +1,18 @@
-import { describe, expect, it } from 'vitest';
-import { TasksProgressWidget } from '../TasksProgress';
+import {
+    describe,
+    expect,
+    it
+} from 'vitest';
+
 import type { RenderContext } from '../../types/RenderContext';
 import type { Settings } from '../../types/Settings';
 import type { WidgetItem } from '../../types/Widget';
+import { TasksProgressWidget } from '../TasksProgress';
 
 describe('TasksProgressWidget', () => {
     const widget = new TasksProgressWidget();
 
     const createContext = (tasks: { status: string }[]): RenderContext => ({
-        modelId: 'test',
-        transcriptPath: '/test/path.jsonl',
         terminalWidth: 100,
         isPreview: false,
         activityMetrics: {
@@ -99,11 +102,15 @@ describe('TasksProgressWidget', () => {
         expect(updated?.metadata?.display).toBe('count');
 
         // count -> bar
-        updated = widget.handleEditorAction('toggle-mode', updated!);
+        if (!updated)
+            throw new Error('Expected count display item');
+        updated = widget.handleEditorAction('toggle-mode', updated);
         expect(updated?.metadata?.display).toBe('bar');
 
         // bar -> progress
-        updated = widget.handleEditorAction('toggle-mode', updated!);
+        if (!updated)
+            throw new Error('Expected bar display item');
+        updated = widget.handleEditorAction('toggle-mode', updated);
         expect(updated?.metadata?.display).toBe('progress');
     });
 });

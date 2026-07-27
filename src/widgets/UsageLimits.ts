@@ -110,10 +110,10 @@ export class UsageLimitsWidget implements Widget {
 
 function getTierDisplay(tier: string): string {
     switch (tier) {
-    case 'free': return 'Free';
-    case 'pro': return 'Pro';
-    case 'max': return 'Max';
-    case 'team': return 'Team';
-    default: return '?';
+        case 'free': return 'Free';
+        case 'pro': return 'Pro';
+        case 'max': return 'Max';
+        case 'team': return 'Team';
+        default: return '?';
     }
 }
